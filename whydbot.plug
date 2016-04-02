@@ -1,0 +1,13 @@
+[Core]
+name = WhydBot
+module = whydbot
+
+[Documentation]
+description = Basic Err integration with whyd.com
+
+[Python]
+version = 3
+
+[Errbot]
+min = 4.0.3
+
