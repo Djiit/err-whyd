@@ -1,10 +1,9 @@
+# coding: utf-8
+from http import client
+from socket import timeout
 import json
-try:
-    from http import client
-except ImportError:
-    import httplib as client
 
-from errbot import BotPlugin, botcmd, arg_botcmd
+from errbot import BotPlugin, botcmd
 
 
 class WhydBot(BotPlugin):
@@ -20,7 +19,10 @@ class WhydBot(BotPlugin):
         if len(args) < 1:
             return 'I need a username to fetch hist last track!'
 
-        status, res = self.request_playlist(args)
+        try:
+            status, res = self.request_playlist(args)
+        except timeout:
+            return 'Oops, I can\'t reach whyd.com...'
 
         if status != 200:
             return 'Oops, something went wrong.'
@@ -33,14 +35,16 @@ class WhydBot(BotPlugin):
         """Display the top 3 track on Whyd.
         Example: !whyd hot
         """
-        status, res = self.request_playlist('hot')
+        try:
+            status, res = self.request_playlist('hot')
+        except timeout:
+            return 'Oops, I can\'t reach whyd.com...'
 
         if status != 200:
             return 'Oops, something went wrong.'
 
-        yield 'Current top tracks on Whyd:'
-
-        yield '\n'.join([self.format_track(i) for i in res['tracks'][:3]])
+        return ('Current top tracks on Whyd:\n' +
+                '\n'.join([self.format_track(i) for i in res['tracks'][:3]]))
 
     @staticmethod
     def format_track(track):
@@ -51,7 +55,7 @@ class WhydBot(BotPlugin):
     @staticmethod
     def request_playlist(url):
         """Fetch whyd.com playlist."""
-        conn = client.HTTPSConnection('whyd.com')
+        conn = client.HTTPSConnection('whyd.com', timeout=5)
         conn.request('GET', '/{url}?format=json'.format(url=url))
         r = conn.getresponse()
         return r.status, json.loads(r.read().decode())

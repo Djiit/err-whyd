@@ -9,7 +9,7 @@ class TestMeetUpPlugin(object):
 
     def test_whyd_hot(self, testbot):
         testbot.push_message('!whyd hot')
-        assert ('Current top track on Whyd:' in testbot.pop_message())
+        assert ('Current top tracks on Whyd:' in testbot.pop_message())
 
     def test_whyd_last(self, testbot):
         testbot.push_message('!whyd last djiit')
@@ -45,6 +45,6 @@ class TestMeetUpPluginStaticMethods(object):
             'trackId': '56f908324bf212908fb777fb',
             'name': 'Frangi - Saga Africa'
         }
-        
+
         result = whydbot.WhydBot.format_track(data)
         assert result == 'Frangi - Saga Africa (https://whyd.com/c/56f908cb8f4e437c7f6f41cf)'
